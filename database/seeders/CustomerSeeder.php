@@ -14,6 +14,11 @@ class CustomerSeeder extends Seeder
      */
     public function run(): void
     {
+        Customer::firstOrCreate(
+            ['phone' => '012345678'],
+            ['name' => 'Walking Customer']
+        );
+
         if (Customer::query()->count() > 1) {
             return;
         }

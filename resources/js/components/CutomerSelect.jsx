@@ -4,7 +4,7 @@ import axios from "axios";
 
 const CustomerSelect = ({ setCustomerId }) => {
     const [customers, setCustomers] = useState([]);
-    const [selectedCustomer, setSelectedCustomer] = useState({value:1,label:"Walking Customer"});
+    const [selectedCustomer, setSelectedCustomer] = useState(null);
 
     // Fetch existing customers from the backend
     useEffect(() => {
@@ -14,6 +14,13 @@ const CustomerSelect = ({ setCustomerId }) => {
                 label: customer.name,
             }));
             setCustomers(customerOptions);
+            setSelectedCustomer(
+                customerOptions.find((customer) => customer.label === "Walking Customer")
+                    ?? customerOptions[0]
+                    ?? null
+            );
+        }).catch((error) => {
+            console.error("Error fetching customers:", error);
         });
     }, []);
   useEffect(() => {
