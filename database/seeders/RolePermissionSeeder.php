@@ -3,10 +3,11 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 
 class RolePermissionSeeder extends Seeder
 {
@@ -15,15 +16,17 @@ class RolePermissionSeeder extends Seeder
      */
     public function run(): void
     {
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
+
         $roles = [
             'Admin',
             'cashier',
             'sales_associate',
         ];
-        for ($i = 0; $i < count($roles); $i++) {
-            $result = Role::firstOrCreate(['name' => $roles[$i]]);
+        foreach ($roles as $role) {
+            Role::firstOrCreate(['name' => $role]);
         }
-        //creates permission
+
         $permissions = [
             //dashboard
             'dashboard_view',
@@ -45,6 +48,7 @@ class RolePermissionSeeder extends Seeder
             'product_update',
             'product_delete',
             'product_import',
+            'product_purchase',
             //brand
             'brand_create',
             'brand_view',
@@ -65,6 +69,7 @@ class RolePermissionSeeder extends Seeder
             'sale_view',
             'sale_update',
             'sale_delete',
+            'sale_edit',
             //purchase
             'purchase_create',
             'purchase_view',
@@ -104,35 +109,16 @@ class RolePermissionSeeder extends Seeder
             'invoice_settings',
 
         ];
-        $admin = Role::where('name', 'Admin')->first();
-        for ($i = 0; $i < count($permissions); $i++) {
-            $permission = Permission::firstOrCreate(['name' => $permissions[$i]]);
-            $admin->givePermissionTo($permission);
-            $permission->assignRole($admin);
+        foreach ($permissions as $permission) {
+            Permission::firstOrCreate(['name' => $permission]);
         }
 
-        // Create users and assign roles
-        $cashierUser = User::create([
-            'name' => 'Mr Cashier',
-            'email' => 'cashier@gmail.com',
-            'password' => bcrypt(12345678),
-            'username' => uniqid(),
-        ]);
-        $salesUser = User::create([
-            'name' => 'Mr Sales',
-            'email' => 'sales@gmail.com',
-            'password' => bcrypt(12345678),
-            'username' => uniqid(),
-        ]);
-        // Assign roles to users
-        $cashierRole = Role::where('name', 'cashier')->first();
-        $salesRole = Role::where('name', 'sales_associate')->first();
+        $admin = Role::findByName('Admin');
+        $cashierRole = Role::findByName('cashier');
+        $salesRole = Role::findByName('sales_associate');
 
-        $cashierUser->assignRole($cashierRole);
-        $salesUser->assignRole($salesRole);
+        $admin->syncPermissions($permissions);
 
-        // Optionally, assign permissions to the cashier and sales_associate roles
-        // You can customize these permissions as needed
         $cashierPermissions = [
             'sale_create',
             'sale_view',
@@ -152,15 +138,31 @@ class RolePermissionSeeder extends Seeder
             'sale_edit',
         ];
 
-        foreach ($cashierPermissions as $permissionName) {
-            $permission = Permission::firstOrCreate(['name' => $permissionName]);
-            $cashierRole->givePermissionTo($permission);
-        }
+        $cashierRole->syncPermissions($cashierPermissions);
+        $salesRole->syncPermissions($salesPermissions);
 
-        foreach ($salesPermissions as $permissionName) {
-            $permission = Permission::firstOrCreate(['name' => $permissionName]);
-            $salesRole->givePermissionTo($permission);
-        }
+        $cashierUser = User::updateOrCreate(
+            ['email' => 'cashier@gmail.com'],
+            [
+                'name' => 'Mr Cashier',
+                'password' => Hash::make('12345678'),
+                'username' => 'demo-cashier',
+                'is_suspended' => false,
+            ]
+        );
+        $cashierUser->syncRoles($cashierRole);
 
+        $salesUser = User::updateOrCreate(
+            ['email' => 'sales@gmail.com'],
+            [
+                'name' => 'Mr Sales',
+                'password' => Hash::make('12345678'),
+                'username' => 'demo-sales',
+                'is_suspended' => false,
+            ]
+        );
+        $salesUser->syncRoles($salesRole);
+
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
     }
 }

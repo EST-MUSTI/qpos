@@ -17,6 +17,10 @@ class PurchaseSeeder extends Seeder
      */
     public function run(): void
     {
+        if (Purchase::query()->exists()) {
+            return;
+        }
+
         DB::transaction(function () {
             // Retrieve random suppliers and users
             $suppliers = Supplier::all();

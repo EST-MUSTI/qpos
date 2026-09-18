@@ -13,6 +13,10 @@ class ProductSeeder extends Seeder
 {
     public function run()
     {
+        if (Product::query()->exists()) {
+            return;
+        }
+
         $faker = Faker::create();
 
         // Create random categories

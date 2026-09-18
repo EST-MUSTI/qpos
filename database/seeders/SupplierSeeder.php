@@ -14,6 +14,9 @@ class SupplierSeeder extends Seeder
      */
     public function run(): void
     {
+        if (Supplier::query()->count() > 1) {
+            return;
+        }
 
         $faker = Faker::create();
         for ($i = 0; $i < 10; $i++) {
