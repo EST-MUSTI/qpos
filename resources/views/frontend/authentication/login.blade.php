@@ -127,8 +127,8 @@
                                 <button type="submit" class="create-account-btn w-100">Sign In</button>
                             </div>
                             <div class="form-group"> <br>
-                            <p><b>Administrator:</b> mustaphaearly@gmail.com</p>
-                            <p>Use your administrator password to sign in.</p>
+                            <p><b>Demo account:</b> demo@vybezzzpos.com</p>
+                            <p><b>Demo password:</b> TryVybezzz2026!</p>
                             </div>
                         </div>
 

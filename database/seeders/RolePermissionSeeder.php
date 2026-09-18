@@ -22,6 +22,7 @@ class RolePermissionSeeder extends Seeder
             'Admin',
             'cashier',
             'sales_associate',
+            'demo_cashier',
         ];
         foreach ($roles as $role) {
             Role::firstOrCreate(['name' => $role]);
@@ -116,6 +117,7 @@ class RolePermissionSeeder extends Seeder
         $admin = Role::findByName('Admin');
         $cashierRole = Role::findByName('cashier');
         $salesRole = Role::findByName('sales_associate');
+        $demoRole = Role::findByName('demo_cashier');
 
         $admin->syncPermissions($permissions);
 
@@ -138,8 +140,13 @@ class RolePermissionSeeder extends Seeder
             'sale_edit',
         ];
 
+        $demoPermissions = [
+            'sale_create',
+        ];
+
         $cashierRole->syncPermissions($cashierPermissions);
         $salesRole->syncPermissions($salesPermissions);
+        $demoRole->syncPermissions($demoPermissions);
 
         $cashierUser = User::updateOrCreate(
             ['email' => 'cashier@gmail.com'],
@@ -162,6 +169,17 @@ class RolePermissionSeeder extends Seeder
             ]
         );
         $salesUser->syncRoles($salesRole);
+
+        $demoUser = User::updateOrCreate(
+            ['email' => 'demo@vybezzzpos.com'],
+            [
+                'name' => 'Vybezzz POS Demo',
+                'password' => Hash::make('TryVybezzz2026!'),
+                'username' => 'vybezzz-demo',
+                'is_suspended' => false,
+            ]
+        );
+        $demoUser->syncRoles($demoRole);
 
         app(PermissionRegistrar::class)->forgetCachedPermissions();
     }
