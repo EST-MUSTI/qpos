@@ -22,7 +22,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        \Illuminate\Http\Request::setTrustedProxies([.'*.'], \Illuminate\Http\Request::HEADER_X_FORWARDED_ALL);
+        \Illuminate\Http\Request::setTrustedProxies(['*'], \Illuminate\Http\Request::HEADER_X_FORWARDED_ALL);
         Paginator::useBootstrap();
     }
 }
