@@ -15,6 +15,7 @@ class CurrencySeeder extends Seeder
     public function run()
     {
         $currencies = [
+            ['name' => 'Kenyan Shilling', 'code' => 'KES', 'symbol' => 'KSh'],
             // Global currencies
             ['name' => 'US Dollar', 'code' => 'USD', 'symbol' => '$'],
             ['name' => 'Euro', 'code' => 'EUR', 'symbol' => '€'],
@@ -75,5 +76,8 @@ class CurrencySeeder extends Seeder
                 $currency
             );
         }
+
+        Currency::where('active', true)->update(['active' => false]);
+        Currency::where('code', 'KES')->update(['active' => true]);
     }
 }
