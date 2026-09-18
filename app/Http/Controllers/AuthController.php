@@ -295,10 +295,14 @@ class AuthController extends Controller
 
     public function redirectUser()
     {
-        if (Auth::check()) {
+        if (Auth::check() && auth()->user()->can('dashboard_view')) {
             return redirect()->route('backend.admin.dashboard');
-        } else {
-            return redirect()->route('login')->with('error', 'You are not logged in');
         }
+
+        if (Auth::check() && auth()->user()->can('sale_create')) {
+            return redirect()->route('backend.admin.cart.index');
+        }
+
+        return redirect()->route('login')->with('error', 'You are not authorized to access the application');
     }
 }
