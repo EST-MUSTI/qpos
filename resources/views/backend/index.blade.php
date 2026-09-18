@@ -181,7 +181,7 @@
 @push('script')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    const dailySaleChart = document.getElementById('dailySaleLineChart');
+    const dailySaleChart = document.getElementById('dailySaleChart');
     const barChartYear = document.getElementById('barChartYear');
 
     new Chart(dailySaleChart, {
